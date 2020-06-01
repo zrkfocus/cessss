@@ -1,12 +1,15 @@
 (function (win) {
+
+    var config = getEnvConfig('xgpre');
     var rankBhdmId;
     // 冒烟测试的ID
     rankBhdmId = "20_20200518151702114326";
-    var config = getEnvConfig('xgpre');
+
     var scriptReady = false;
     var initialized = false;
     var head = document.getElementsByTagName("head")[0];
     var style = document.createElement("style");
+
     var commonStyle = ` body {
               margin: 0;
           }
@@ -113,27 +116,30 @@
     function init() {
         initialized = true;
         const params = { rankDataList, imgSetting, style };
-        var userData = window.localStorage.getItem("strTMMixNick");
-        getBasicImg(userData, "", function (res) {
-            const imgs = res.data.styleSettings;
-            params.rankDataList = {
-                freeRate: res.data.interestFreeList,
-                freeBill: res.data.freeList,
-                freeMail: res.data.freeMailingList,
-            };
-            for (let i = 0; i < imgs.length; i++) {
-                let key = imgs[i].styleName;
-                params.imgSetting[key] = imgs[i].url;
-            }
-            createRank(
-                params.style,
-                params.imgSetting,
-                params.rankDataList,
-            );
-            loadTaskModal(params.style, params.imgSetting);
-            loadRuleModal(params.style, params.imgSetting);
-            createFocusModal(params.style, params.imgSetting);
-        });
+        // var userData = window.localStorage.getItem("strTMMixNick");
+        oauthAction(function (userData) {
+            strTMMixNick = userData;
+            getBasicImg(userData, "", function (res) {
+                const imgs = res.data.styleSettings;
+                params.rankDataList = {
+                    freeRate: res.data.interestFreeList,
+                    freeBill: res.data.freeList,
+                    freeMail: res.data.freeMailingList,
+                };
+                for (let i = 0; i < imgs.length; i++) {
+                    let key = imgs[i].styleName;
+                    params.imgSetting[key] = imgs[i].url;
+                }
+                createRank(
+                    params.style,
+                    params.imgSetting,
+                    params.rankDataList,
+                );
+                loadTaskModal(params.style, params.imgSetting);
+                loadRuleModal(params.style, params.imgSetting);
+                createFocusModal(params.style, params.imgSetting);
+            });
+        }, false);
         // 
         // createCenterPosition(style);
         // createFocusModal(style);
@@ -466,10 +472,10 @@
             $("#free_bill_zr").removeClass('rank_active');
             $("#free_mail_zr").removeClass('rank_active');
             clearInterval(timer);
-            clearInterval(timer2);
-            clearInterval(timer3);
-            clearInterval(timer4);
-            clearInterval(timer5);
+            clearTimeout(timer2);
+            clearTimeout(timer3);
+            clearTimeout(timer4);
+            clearTimeout(timer5);
             num = 0;
             timer1 = setTimeout(function () {
                 rankGo();
@@ -483,10 +489,10 @@
             $("#free_rate_zr").removeClass('rank_active');
             $("#free_mail_zr").removeClass('rank_active');
             clearInterval(timer);
-            clearInterval(timer1);
-            clearInterval(timer3);
-            clearInterval(timer4);
-            clearInterval(timer5);
+            clearTimeout(timer1);
+            clearTimeout(timer3);
+            clearTimeout(timer4);
+            clearTimeout(timer5);
             num = 1;
             timer2 = setTimeout(function () {
                 rankGo();
@@ -500,10 +506,10 @@
             $("#free_bill_zr").removeClass('rank_active');
             $("#free_rate_zr").removeClass('rank_active');
             clearInterval(timer);
-            clearInterval(timer1);
-            clearInterval(timer2);
-            clearInterval(timer4);
-            clearInterval(timer5);
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+            clearTimeout(timer4);
+            clearTimeout(timer5);
             num = 2;
             timer3 = setTimeout(function () {
                 rankGo();
@@ -511,20 +517,20 @@
         });
         $(".rank_focus_small").click(function () {
             clearInterval(timer);
-            clearInterval(timer1);
-            clearInterval(timer2);
-            clearInterval(timer3);
-            clearInterval(timer5);
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+            clearTimeout(timer3);
+            clearTimeout(timer5);
             timer4 = setTimeout(function () {
                 rankGo();
             }, 3000)
         });
         $(".rank_focus_big").click(function () {
             clearInterval(timer);
-            clearInterval(timer1);
-            clearInterval(timer2);
-            clearInterval(timer3);
-            clearInterval(timer4);
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+            clearTimeout(timer3);
+            clearTimeout(timer4);
             timer5 = setTimeout(function () {
                 rankGo();
             }, 3000)
@@ -633,7 +639,7 @@
                     <div class="rule_subTitle" style="margin-top:4vw">
                         注意事项
                     </div>
-                    <div class="rule_content">活动期间，如用户存在或曾经存在以下违规行为(包括但不限于恶意套取资金、恶意套券、批量注册、机器作弊、虚假交易、扰乱系统、实施网络攻击、使用小运营商手机号、盗用或冒用他人信息等)或其他不符合正常消费者消费习惯的行为，或者其他被认定为侵犯苏宁金融、其他用户或任何第三人合法利益的行为等，主办发取消用户活动资格，并有权撤销相关违规交易和奖励，必要时追究法律责任。</div>
+                    <div class="rule_content">活动期间，如用户存在或曾经存在以下违规行为（包括但不限于恶意套取资金、恶意套券、批量注册、机器作弊、虚假交易、扰乱系统、实施网络攻击、使用小运营商手机号、盗用或冒用他人信息等）或其他不符合正常消费者消费习惯的行为、或者其他被认定为侵犯苏宁金融、其他用户或任何第三人合法利益的行为等，主办方取消用户活动资格，并有权撤销相关违规交易和奖励，必要时追究法律责任。</div>
                 </div>
             </div>
             </div>
@@ -820,8 +826,8 @@
     function getBasicImg(strTMMixNick, snUnionId, callback) {
         $.ajax({
             // url:'https://192.168.2.13:8080/ql/front/department/basicsInfo?actId=402880a371f32abf0171f3307bd60013&user_id=71056125',
-            url:
-                "https://galaxie100141.cloud.suning.com/ql/front/department/basicsInfo",
+            url: config.dmIsvUrl +
+                "/ql/front/department/basicsInfo",
             method: "POST",
             data: {
                 actId: "402880a371f32abf0171f3307bd60013",
@@ -836,6 +842,147 @@
             success: callback,
         });
     }
+    function getEnvConfig(env) {
+        var envMap = {
+            'xgpre': {
+                authStatusUrl: "//myprexg.cnsuning.com/",
+                aqUrl: "//aqprexg.cnsuning.com/asc/auth",
+                loginUrl: "//passportprexg.cnsuning.com/ids/login?service=",
+                jssdk: "//oss.suning.com/cbpmb/scbpm/suning-sdk-galaxie_xgpre.js",
+                dmIsvUrl: "https://galaxie100141.cloud.suning.com",
+            },
+            'prd': {
+                authStatusUrl: "//loginst.suning.com/",
+                aqUrl: "https://aq.suning.com/asc/auth",
+                loginUrl: "https://passport.suning.com/ids/login?service=",
+                jssdk: "https://oss.suning.com/cbpmb/scbpm/suning-sdk-galaxieV0.4.9.js",
+                dmIsvUrl: "https://galaxie100122.cloud.suning.com",
+            }
+        }
+        return envMap[env];
+    }
+    // 授权登录
+    function oauthAction(cb, redirect) {
+        locationUrl = window.location.href;
+        var config = getEnvConfig('xgpre');
+        // 调用方式：
+        if ($.probeAuthStatus) {
+            $.probeAuthStatus(
+                function (userData) {
+                    console.log(userData);
+                    if (cb) {
+                        cb(userData);
+                    }
+                    //已登录
+                    // window.localStorage.setItem("strTMMixNick", userData);
+                },
+                function () {
+                    if (!redirect) {
+                        cb('');
+                        return;
+                    }
+                    // 未登录
+                    var targetUrl = encodeURIComponent(locationUrl);
+                    var serverUrl =
+                        config.aqUrl +
+                        "?targetUrl=" +
+                        targetUrl +
+                        "&loginTheme=wap_new";
+                    // 这里有个问题，如果返回不刷新，targetUrl 要 encodeURIComponent, service 后面的参数要再 encodeURIComponent 一次，两次 encodeURIComponent 可以解决。
+                    var url =
+                        config.loginUrl + serverUrl;
+                    window.location.href = url;
+                },
+                {
+                    base: config.authStatusUrl,
+                    loginTheme: "wap_new",
+                }
+            );
+        }
+    }
+    // 获取已获得云钻数
+    function focusYuanZuan() {
+        $.ajax({
+            url: config.dmIsvUrl +
+                "/ql/front/department/missionModal",
+            method: "POST",
+            data: {
+                actId: '402880a371f32abf0171f3307bd60013',
+                strTMMixNick: strTMMixNick //window.localStorage.getItem("strTMMixNick"),
+            },
+            dataType: "json",
+            xhrFields: {
+                withCredentials: true,
+            },
+            success: function (res) {
+                if (res.succ) {
+                    $("#gettedYuanZuanNumZr").text(res.data.diamondNumFav);
+                    if (res.data.finishFav) {
+                        $("#yuanZuanFirstTaskZr").toggleClass('hidden').next().toggleClass('hidden')
+                    }
+                }
+            },
+        });
+    }
+
+    function wrapAuthStatus(fn, redirect) {
+        return function () {
+            if (strTMMixNick) {
+                fn.apply(win, arguments);
+            } else {
+                oauthAction(function (userData) {
+                    strTMMixNick = userData;
+                    fn.apply(win, arguments);
+                }, redirect)
+            }
+        }
+    }
+
+    // 关闭弹窗
+    function toggleModal(id) {
+        $('#' + id).toggleClass('hidden');
+        $('html,body').css('overflow', 'auto')
+    }
+    function focusShopDom(th, isFavShop) {
+        if (isFavShop === 0) {
+            th.children("img").addClass('hidden');
+            th.children("a").removeClass('hidden');
+        }
+    }
+    function focusShop(actId, userId, type, id) {
+        // var userData = window.localStorage.getItem("strTMMixNick");
+        // console.log(userData);
+        // if (!userData) {
+        // 	oauthAction()
+        // }
+
+        $.ajax({
+            url: config.dmIsvUrl +
+                "/ql/front/department/favAndGetAward",
+            method: "POST",
+            data: {
+                actId: actId,
+                userId: userId,
+                buyerNick: strTMMixNick, //window.localStorage.getItem("strTMMixNick"),
+                type: type,
+            },
+            dataType: "json",
+            xhrFields: {
+                withCredentials: true,
+            },
+            success: function (res) {
+                if (res.succ) {
+                    toggleModal('focusSuccessModalzr');
+                    $("#shop" + id + type).html((parseInt($("#shop" + id + type).html()) + 1) + '人');
+                    $("#focusSuccessText").text(res.msg);
+                } else {
+                    toggleModal('focusFailModalzr');
+                    $("#focusFailText").text(res.errorMsg);
+                }
+                // alert("succc");
+            },
+        });
+    }
 
     function rank(options) {
         rankBhdmId = options.id;
@@ -846,123 +993,10 @@
     }
 
     win.rank = rank;
+    win.focusShop = wrapAuthStatus(focusShop, true);
+    win.focusYuanZuan = focusYuanZuan;
+    win.toggleModal = toggleModal;
+    win.focusShopDom = focusShopDom;
 
 })(window);
 
-function getEnvConfig(env) {
-    var envMap = {
-        'xgpre': {
-            authStatusUrl: "//myprexg.cnsuning.com/",
-            aqUrl: "//aqprexg.cnsuning.com/asc/auth",
-            loginUrl: "//passportprexg.cnsuning.com/ids/login?service=",
-            jssdk: "//oss.suning.com/cbpmb/scbpm/suning-sdk-galaxie_xgpre.js"
-        },
-        'prd': {
-            authStatusUrl: "//loginst.suning.com/",
-            aqUrl: "https://aq.suning.com/asc/auth",
-            loginUrl: "https://passport.suning.com/ids/login?service=",
-            jssdk: "https://oss.suning.com/cbpmb/scbpm/suning-sdk-galaxieV0.4.9.js"
-        }
-    }
-    return envMap[env];
-}
-// 授权登录
-function oauthAction() {
-    locationUrl = window.location.href;
-    var config = getEnvConfig('xgpre');
-    // 调用方式：
-    if ($.probeAuthStatus) {
-        $.probeAuthStatus(
-            function (userData) {
-                console.log(userData);
-                //已登录
-                window.localStorage.setItem("strTMMixNick", userData);
-            },
-            function () {
-                // 未登录
-                var targetUrl = encodeURIComponent(locationUrl);
-                var serverUrl =
-                    config.aqUrl +
-                    "?targetUrl=" +
-                    targetUrl +
-                    "&loginTheme=wap_new";
-                // 这里有个问题，如果返回不刷新，targetUrl 要 encodeURIComponent, service 后面的参数要再 encodeURIComponent 一次，两次 encodeURIComponent 可以解决。
-                var url =
-                    config.loginUrl + serverUrl;
-                window.location.href = url;
-            },
-            {
-                base: config.authStatusUrl,
-                loginTheme: "wap_new",
-            }
-        );
-    }
-}
-// 获取已获得云钻数
-function focusYuanZuan() {
-    $.ajax({
-        url:
-            "https://galaxie100141.cloud.suning.com/ql/front/department/missionModal",
-        method: "POST",
-        data: {
-            actId: '402880a371f32abf0171f3307bd60013',
-            strTMMixNick: window.localStorage.getItem("strTMMixNick"),
-        },
-        dataType: "json",
-        xhrFields: {
-            withCredentials: true,
-        },
-        success: function (res) {
-            if (res.succ) {
-                $("#gettedYuanZuanNumZr").text(res.data.diamondNumFav);
-                if (res.data.finishFav) {
-                    $("#yuanZuanFirstTaskZr").toggleClass('hidden').next().toggleClass('hidden')
-                }
-            }
-        },
-    });
-}
-// 关闭弹窗
-function toggleModal(id) {
-    $('#' + id).toggleClass('hidden');
-    $('html,body').css('overflow', 'auto')
-}
-function focusShopDom(th, isFavShop) {
-    if (isFavShop === 0) {
-        th.children("img").addClass('hidden');
-        th.children("a").removeClass('hidden');
-    }
-}
-function focusShop(actId, userId, type, id) {
-    var userData = window.localStorage.getItem("strTMMixNick");
-    console.log(userData);
-    if (!userData) {
-        oauthAction()
-    }
-    $.ajax({
-        url:
-            "https://galaxie100141.cloud.suning.com/ql/front/department/favAndGetAward",
-        method: "POST",
-        data: {
-            actId: actId,
-            userId: userId,
-            buyerNick: window.localStorage.getItem("strTMMixNick"),
-            type: type,
-        },
-        dataType: "json",
-        xhrFields: {
-            withCredentials: true,
-        },
-        success: function (res) {
-            if (res.succ) {
-                toggleModal('focusSuccessModalzr');
-                $("#shop" + id + type).html((parseInt($("#shop" + id + type).html()) + 1) + '人');
-                $("#focusSuccessText").text(res.msg);
-            } else {
-                toggleModal('focusFailModalzr');
-                $("#focusFailText").text(res.errorMsg);
-            }
-            // alert("succc");
-        },
-    });
-}
