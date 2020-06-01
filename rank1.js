@@ -3,7 +3,7 @@
     var config = getEnvConfig('xgpre');
     var rankBhdmId;
     // 冒烟测试的ID
-    rankBhdmId = "20_20200518151702114326";
+    // rankBhdmId = "20_20200518151702114326";
 
     var scriptReady = false;
     var initialized = false;
@@ -472,10 +472,10 @@
             $("#free_bill_zr").removeClass('rank_active');
             $("#free_mail_zr").removeClass('rank_active');
             clearInterval(timer);
-            clearTimeout(timer2);
-            clearTimeout(timer3);
-            clearTimeout(timer4);
-            clearTimeout(timer5);
+            clearInterval(timer2);
+            clearInterval(timer3);
+            clearInterval(timer4);
+            clearInterval(timer5);
             num = 0;
             timer1 = setTimeout(function () {
                 rankGo();
@@ -489,10 +489,10 @@
             $("#free_rate_zr").removeClass('rank_active');
             $("#free_mail_zr").removeClass('rank_active');
             clearInterval(timer);
-            clearTimeout(timer1);
-            clearTimeout(timer3);
-            clearTimeout(timer4);
-            clearTimeout(timer5);
+            clearInterval(timer1);
+            clearInterval(timer3);
+            clearInterval(timer4);
+            clearInterval(timer5);
             num = 1;
             timer2 = setTimeout(function () {
                 rankGo();
@@ -506,10 +506,10 @@
             $("#free_bill_zr").removeClass('rank_active');
             $("#free_rate_zr").removeClass('rank_active');
             clearInterval(timer);
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-            clearTimeout(timer4);
-            clearTimeout(timer5);
+            clearInterval(timer1);
+            clearInterval(timer2);
+            clearInterval(timer4);
+            clearInterval(timer5);
             num = 2;
             timer3 = setTimeout(function () {
                 rankGo();
@@ -517,20 +517,20 @@
         });
         $(".rank_focus_small").click(function () {
             clearInterval(timer);
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-            clearTimeout(timer3);
-            clearTimeout(timer5);
+            clearInterval(timer1);
+            clearInterval(timer2);
+            clearInterval(timer3);
+            clearInterval(timer5);
             timer4 = setTimeout(function () {
                 rankGo();
             }, 3000)
         });
         $(".rank_focus_big").click(function () {
             clearInterval(timer);
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-            clearTimeout(timer3);
-            clearTimeout(timer4);
+            clearInterval(timer1);
+            clearInterval(timer2);
+            clearInterval(timer3);
+            clearInterval(timer4);
             timer5 = setTimeout(function () {
                 rankGo();
             }, 3000)
@@ -617,7 +617,7 @@
                     </div>
                     <div class="rule_content">1、活动时间：2020.06.01和2020.06.18；</div>
                     <div class="rule_content">2、参与店铺：拉夏贝尔旗舰店、新秀丽官方旗舰店、七匹狼官方旗舰店、阿玛尼苏宁自营店、卡西欧手表旗舰店、GXG官方旗舰店；</div>
-                    <div class="rule_content">注：活动期间在以上店铺可参与免额活动，具体免额参与及玩法以店铺公示为准。</div>
+                    <div class="rule_content">注：活动期间在以上店铺可参与免单活动，具体免单参与及玩法以店铺公示为准。</div>
                     <div class="rule_subTitle" style="margin-top:4vw">
                         分期免息
                     </div>
